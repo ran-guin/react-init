@@ -1,19 +1,44 @@
 {
   "name": "react1",
-  "version": "0.1.0",
-  "private": true,
-  "devDependencies": {
-    "react-scripts": "0.8.4"
-  },
-  "dependencies": {
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
-    "react-router": "^3.0.0"
-  },
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "babel-node server.js",
+    "client": "babel-node start-client.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ran-guin/react-init.git"
+  },
+  "author": "Ran Guin <ran.guin@gmail.com> (http://cosinesystems.org)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ran-guin/react-init/issues"
+  },
+  "homepage": "https://github.com/ran-guin/react-init#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "express": "^4.14.0",
+    "express-resource": "^1.0.0",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^7.2.1",
+    "mysql": "^2.12.0",
+    "q": "^1.4.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "concurrently": "^3.1.0",
+    "html-webpack-plugin": "^2.26.0"
   }
 }
