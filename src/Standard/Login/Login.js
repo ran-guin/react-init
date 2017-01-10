@@ -12,7 +12,7 @@ class App extends Component {
 }
 
 App.propTypes = {
-  name: React.PropTypes.string.isRequired
+  name: React.PropTypes.string
 }
 
 export default App;
