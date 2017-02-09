@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('mysql-promise')();
 var q    = require('q');
 
 function dbc(params) {
@@ -11,18 +11,24 @@ dbc.prototype.connect = function() {
 
 	console.log("CREATING connection to " + mysql.constructor);
 
-	var connection = mysql.createsConnection({
+	// var connection = mysql.createConnection({
+	mysql.configure({
 	  host : 'localhost',
 	  user : 'tester',
 	  password : 'testpass',
-	  db : 'users'
+	  database : 'litmusdev'
 	});
 
-	console.log(connection.constructor);
+	deferred.resolve(mysql);
+	
+    // mysql.connect()
+    // .then (function (connection) {
+	   //  deferred.resolve(connection);
+    // })
+    // .catch ( function (err) {
+    // 	deferred.reject(err);
+    // });
 
-    connection.connect();
-
-    deferred.resolve(connection);
     return deferred.promise;	
 }
 
