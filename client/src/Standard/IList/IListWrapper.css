@@ -1,0 +1,15 @@
+.IListWrapper {
+	max-width: 500px;
+	margin: auto;
+	border: 2px solid grey;
+	text-align: left;
+	color: grey;
+	padding: 10px;
+}
+
+listTitle {
+	font-weight: bold;
+	padding: 8px;
+	margin: 8px;
+
+}

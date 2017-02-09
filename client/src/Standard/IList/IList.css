@@ -1,0 +1,31 @@
+.IListBox {
+	max-width: 500px;
+	margin: auto;
+	/*border: 2px solid black;*/
+	text-align: left;
+	padding: 4px;
+	margin: 4px;
+}
+
+.missing {
+	color: orange;
+}
+
+.selected {
+	color: green;
+	background-color: white;
+}
+
+.deselected {
+	color: grey;
+	background-color: lightgrey;
+}
+
+ul.IListItems {
+	list-style-type: none;
+	list-stle: none;
+}
+
+listLabel {
+	font-weight: bold;
+}
