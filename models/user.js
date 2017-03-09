@@ -10,9 +10,6 @@ function user() {
 user.prototype.loadUser = function() {
 	var deferred = q.defer();
 
-	this.name = 'changed';
-	deferred.resolve('ok');
-
 	var dbc = new Dbc();
  	
  	dbc.connect()

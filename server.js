@@ -2,12 +2,17 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
+var cors = require('cors');
+// var cors = require('./cors'); // locally specified cors settings... or from standard cors library
+
 // global.config = require('./config');
 
 var port = 3002;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cors());  // if using standard 'cors' module 
 
 app.use(require('./controllers')); 
 

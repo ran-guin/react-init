@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/ran-guin/react-init#readme",
   "dependencies": {
+    "axios": "^0.15.3",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
@@ -27,9 +28,12 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^7.2.1",
     "mysql": "^2.12.0",
+    "mysql-promise": "^4.1.0",
+    "mysql-utilities": "^1.0.8",
     "q": "^1.4.1",
     "request": "^2.79.0",
-    "request-promise": "^4.1.1"
+    "request-promise": "^4.1.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -39,6 +43,7 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "concurrently": "^3.1.0",
-    "html-webpack-plugin": "^2.26.0"
+    "html-webpack-plugin": "^2.26.0",
+    "typescript": "^2.1.5"
   }
 }
