@@ -1,8 +1,8 @@
 .SearchGrid
  {
-	color: red;
+	color: black;
 	text-align: center;
 	max-width: 500px;
 	margin: auto;
-	border: 3px solid black;
+	/*border: 3px solid black;*/
 }
