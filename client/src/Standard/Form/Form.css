@@ -1,0 +1,16 @@
+.FormBox {
+
+},
+
+.FormBody {
+	align: center;
+	border: 2px solid black;
+}
+
+.form-row {
+	border: 1px solid black;
+}
+
+.element-error {
+	background-color: red;
+}
