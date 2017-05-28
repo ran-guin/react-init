@@ -6,8 +6,8 @@ import {observer} from 'mobx-react';
 
 const defaultHiddenState = true;
 
-const App = observer(
-class App extends Component {
+const IList = observer(
+class IList extends Component {
  
   static PropTypes = {
     title: React.PropTypes.string,
@@ -74,23 +74,79 @@ class App extends Component {
     }
   }
 
+  clearAlternates = function(id) {
+    var parent = this.props.settings[id].parent;
+    var ids = Object.keys(this.props.settings);
+
+    console.log('clear ' + ids.join(','));
+    for (var i=0; i<ids.length; i++) {
+      if (ids[i] == parent) {
+        console.log('leave ' + parent)
+      }
+      else if (ids[i] == id) {
+        console.log('self left');
+      }
+      else {
+        console.log('clear ' + ids[i]);
+        this.props.settings[ids[i]].classType = 'hidden';
+      }
+    }
+    console.log("SET" + JSON.stringify(this.props.settings));
+  }
+
   toggleSelect = label => {
 
     this.props.global.status = 'updated';
 
-    var id = this.item.id;
-    // reset selected flag 
-    this.props.settings[id].selected = this.props.settings[id].selected ?  false : true;
+    // var id = this.item.id;
+    var id;
+    var chosen;
+    if (label && label.target) {
+      id = label.target.id;
+      chosen = label.target.checked;
+      console.log(id + ' selected ?: ' + chosen);
+    }
+    else { 
+      console.log("no label ?");
+    }
+
+    console.log(id + ' : ' + JSON.stringify(this.props.global.list[id]));
+    var parent = this.props.global.list[id].parent;
+
+    if (! this.props.settings[id]) { this.props.settings[id] = {} }
+
+    // if (this.props.settings[id].checked) {
+    //   this.props.settings[id].checked = false;
+    // } 
+    // else {
+    //   this.props.settings[id].checked = true;
+    // }
+    // = chosen ?  true : false;
+
+    console.log('settings: ' + JSON.stringify(this.props.settings));
+
+
+    this.props.settings[id].selected = !this.props.settings[id].selected;
+
+    var name = this.props.settings[id].name;
 
     // reset class of object ... 
     var status = false;
     if (this.props.settings[id].selected) {
+      this.props.global.list[parent].subselects[name] = true;
       this.props.settings[id].classType = 'IListBox selected'
       status = true;
+      this.props.settings[id].collapsed = false;
+      this.props.global.changed.push(id);
+      // this.autoActivateParent(id);
     }
     else {
+      this.props.global.list[parent].subselects[name] = false;
       this.props.settings[id].classType = 'IListBox deselected'      
       status = false;
+      this.props.settings[id].collapsed = true;
+      // this.autoDeActivateChildren(id);
+      this.props.global.changed.push(id);
     }
 
     var el = document.getElementById('selector' + id);
@@ -98,11 +154,15 @@ class App extends Component {
       el.className = this.props.settings[id].classType;
     }
 
-    this.props.settings.changes++;  // trigger DOM updates (required if new key added to object class)
+    // this.props.settings.changes++;  // trigger DOM updates (required if new key added to object class)
     console.log("Reset settings: " + JSON.stringify(this.props.settings[id]));
-
-    console.log("call parent with " + label.target.name + ': ' + label.target.value + '= ' + label.target.selected);
+    console.log("Reset globals: " + JSON.stringify(this.props.global));
     this.props.updateList({id: this.item.id, name: this.item.name, selected: status});
+
+    // var keys = Object.keys(this.props.settings);
+    // for (var i=0; i<keys.length; i++) {
+    //   this.props.settings[id].collapsed = 1;
+    // }
   }
 
   updateList(e) {
@@ -115,7 +175,7 @@ class App extends Component {
     var id = this.item.id || '0';
     this.props.settings[id].collapsed =  ! this.props.settings[id].collapsed;
 
-    console.log("set visibility to " + JSON.stringify(this.props.settings[id].collapsed));
+    console.log("set visibility to " + JSON.stringify(! this.props.settings[id].collapsed));
 
     this.setState( { hide: this.state.hide ? false : true });
 
@@ -128,7 +188,7 @@ class App extends Component {
     //   el.style.display = 'none';      
     // }
 
-    this.props.settings.changes++;  // trigger DOM updates (required if new key added to object class)   
+    // this.props.settings.changes++;  // trigger DOM updates (required if new key added to object class)   
 
   }
 
@@ -141,8 +201,8 @@ class App extends Component {
     var depth = this.item.depth || 0;
     depth = depth+1;
 
-    var globalSelect = this.props.global.selectable;
-    var showMissing = this.props.global.showMissing;
+    var globalSelect = this.props.global.selectable || 1;
+    var show = this.props.global.show;
 
     var showIcon = <span>&gt; &lt;</span>; // <i className='fa fa-close'></i>;
     var hideIcon = <span>&lt; &gt;</span>;
@@ -157,14 +217,22 @@ class App extends Component {
 
     var id = this.item.id || '0';
     
-    var hidden = this.props.settings[id].collapsed; // this.state.collapsed; 
+    var hidden = this.props.settings[id].collapsed; // this.state.collapsed;
+    var selected = this.props.settings[id].selected;
+
+    var prechecked = false;
+    if (this.props.settings[id].selected) { prechecked = true }
+    else { prechecked = false; }
 
     var elementID = 'selector' + id;
     var sublistID = id + 'sublist';
 
     var select = '';
     if (this.item.depth && (this.item.selectable || globalSelect)) {
-      select = <input type='checkbox' onClick={this.toggleSelect}></input>
+      select = <input id={id} name='selector' type='checkbox' value='' checked={prechecked} onChange={this.toggleSelect.bind(this)}></input>
+    }
+    else {
+      console.log(this.item.name + ' NOT selectable');
     }
 
     var classType = 'IListBox';
@@ -184,7 +252,7 @@ class App extends Component {
         }
         else {
           classType = classType + ' missing';
-          if (showMissing) { hidden = false }
+          if (show === 'Missing') { hidden = false }
           settings[this.item.id].classType = 'IListBox missing';
         } 
       }
@@ -199,7 +267,14 @@ class App extends Component {
       // generate recursive list here
       var count = list.length;
 
-      var hide = <button onClick={this.toggleVisibility.bind(this)}> {showIcon} </button>;
+      var subselects;
+      var globals = this.props.global;
+      // if (globals.subselects && globals.subselects[this.item.id]) {
+      //   subselects = Object.keys.globals.subselects[this.item.id].join(',');
+      // }
+      console.log("globals: " + JSON.stringify(globals));
+
+      var hide = <button onClick={this.toggleVisibility.bind(this)}> {showIcon} </button>
       var show = <button onClick={this.toggleVisibility.bind(this)}> {hideIcon} </button>;
 
       var component = <ul className='IListItems'>
@@ -219,13 +294,13 @@ class App extends Component {
               }
               else if (Slist && Slist.length) {
                 return  <li key={ index }>
-                          <App title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList}/>
+                          <IList title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
                         </li>
               }
               else {
                 if (thisTitle) {
                   return <li key={ index }>
-                          <App title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList}/>
+                          <IList title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
                         </li>
                 }
                 else {
@@ -236,10 +311,9 @@ class App extends Component {
           </ul>      
 
       if (this.item.depth) {
-        var style = 'display:none';
 
         return (
-          <div id={elementID} className={settings[id].classType}>
+          <div id={elementID} className={settings[id].classType} >
             <listLabel>{select} {this.props.title} ({label}) &nbsp; &nbsp; 
               {hidden && show }
               {!hidden && hide }
@@ -251,28 +325,14 @@ class App extends Component {
         )
       }
       else {
-        // Main Wrapper 
-
-        var radio = 'radio';
-        var radioname = 'visibilityOptions';
-        var values = ['All','Selected','Missing'];
         return (
-          <span>
+          <div>
+            <hr />
             {hidden && show }
             {!hidden && hide }
-            <p />
-            {values.map( function (value, index) {
-              return (
-                <span>
-                  <input type={radio} name={radioname} value={value} />
-                  &nbsp; {value} &nbsp;
-                </span>
-              )
-
-            })}
-            {!hidden && <hr />}
+            {!hidden && <br />}
             {!hidden && component}
-          </span>
+          </div>
         )
       }
     }
@@ -287,4 +347,4 @@ class App extends Component {
   }
 })
 
-export default App;
+export default IList;

@@ -7,6 +7,10 @@
 	margin: 4px;
 }
 
+.hidden {
+	visibility: hidden;
+}
+
 .missing {
 	color: orange;
 }

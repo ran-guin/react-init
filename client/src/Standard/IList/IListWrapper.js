@@ -3,16 +3,18 @@ import './IListWrapper.css';
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
-import IListItem from './IListItem';
 import IList from './IList';
 import _ from 'underscore';
 
 const defaultHiddenState = true;
  
-var globals = observable({ status: 'initialized', timestamp: new Date() });
-var settings   = observable({ changes: 0 });
+var globals = observable({ status: 'initialized', timestamp: new Date(), list : {}, changed: []});
+var settings   = observable({ });
 
 var selected = observable({ count: 0, ids: [], labels: [] });
+var initial_selection;   
+
+var changes = [];
 
 var test = observable({
   'string': 'abc',
@@ -27,10 +29,9 @@ class App extends Component {
     title: React.PropTypes.string,
     list: React.PropTypes.array,
     hideAll: React.PropTypes.boolean,
-
+    show: React.PropTypes.string,
     // globals 
     selectable: React.PropTypes.boolean,
-    showMissing: React.PropTypes.boolean,
     collabpsible: React.PropTypes.boolean,
     multiple: React.PropTypes.boolean,
     minDepth: React.PropTypes.number,
@@ -47,14 +48,14 @@ class App extends Component {
       // list: [],
       // global: this.props.globals,
       selectable: this.props.selectable,
-      showMissing: this.props.showMissing,
+      show: this.props.show,
     };
 
     globals.selectable = this.props.selectable || false;
-    globals.showMissing = this.props.showMissing;
+    globals.show = this.props.show;
     globals.collapsible = this.props.collapsible;   
     globals.minDepth = this.props.minDepth || 1;   
-    globals.multiple = this.props.multiple;     
+    globals.multiple = this.props.multiple; 
   }
 
   componentWillMount(props) {      
@@ -68,21 +69,23 @@ class App extends Component {
     // this.items = observable({});
     // this.iterate(this.props.list, 0);  
 
-    this.normalize(this.props.list, 0, 0);
-
+   globals.list[0] = { parent: null, subselects: {}};
+   this.normalize(0, this.props.list, 0, 0);
+    
     var initialCollapsedState = true;
     if (this.props.minDepth) {
       initialCollapsedState = false;
     }
 
-    settings['0'] = {'classType' : 'IListBox', depth: 0, collapsed: initialCollapsedState};   
+    settings['0'] = observable({'classType' : 'IListBox', depth: 0, collapsed: initialCollapsedState});   
     
     var keys = Object.keys(settings);
+
     console.log(keys.length + " settings: " + JSON.stringify(settings));
   }
 
-  normalize(array, depth, level) {
-    { array.map( function(item, index) {
+  normalize(parent, array, depth, level) {
+    array.map( function(item, index) {
       var copy = _.clone(item);
         
       var list = copy.list;
@@ -90,6 +93,7 @@ class App extends Component {
 
       copy.level = level + '.' + index;
       copy.depth = depth + 1;
+      copy.parent = parent;
 
       var minDepth = this.props.minDepth || 0;
       if (copy.depth >= minDepth) {
@@ -100,24 +104,33 @@ class App extends Component {
       }
 
       copy.selected = item.selected;
+      
+      // globals.list[parent] = {parent: null, subselects: {} };
+      globals.list[item.id] = { parent: parent, subselects: {}};
+
+      console.log("G: " + JSON.stringify(globals.list));
+
       if (copy.selected) {
         selected.count++;
         selected.ids.push(item.id);
         selected.labels.push(item.name);
+        globals.list[parent].subselects[item.name] = true;
+      } 
+      else {
+        globals.list[parent].subselects[item.name] = false;
       }
 
-      settings[item.id] = copy;
+      settings[item.id] = observable(copy);
 
       if (list && list.length) {
-        this.normalize(list, copy.depth, copy.level);
+        this.normalize(item.id, list, copy.depth, copy.level);
       }
-
-    }.bind(this))}
+    }.bind(this));
     console.log("iterated...");
   }
 
   iterate(array, depth) {
-      { array.map( function(item, index) {
+      array.map( function(item, index) {
         var copy = _.clone(item);
         
         var list = copy.list;
@@ -130,8 +143,7 @@ class App extends Component {
         if (list && list.length) {
           this.iterate(list, depth+1);
         }
-
-      }.bind(this))}
+      }.bind(this));
       console.log("iterated...");
   }
 
@@ -164,13 +176,13 @@ class App extends Component {
     var name = item.name;
     var picked = item.selected;
 
-    if (picked) {
+    var exists = selected.ids.indexOf(id);
+    if (picked && exists == -1) {
       selected.ids.push(id);
       selected.labels.push(name);
       selected.count++;
     }
     else {
-      var exists = selected.ids.indexOf(id);
       console.log("exists: " + exists);
       if (exists >= 0) {
         selected.ids.splice(exists,1);
@@ -185,18 +197,8 @@ class App extends Component {
     console.log(JSON.stringify(selected));  
   }
 
-  testIt() {
-    console.log("master function");
-    // this.setState( { hide: this.state.hide ? false : true });
-    // globals.addme = 'hello';
-    globals.init = 'newone';
-    console.log(JSON.stringify(globals));
-
-    test['object']['another'] = 'hello';
-    test['string'] = test['string'] + ' and more...';
-    test['number']++;
-
-    console.log('Reset ' + JSON.stringify(test));
+  saveList() {
+    console.log("Save List: " + selected.labels.join(', '));
   }
 
   render() {
@@ -209,19 +211,39 @@ class App extends Component {
       
       var sublistID = '0sublist';
 
+        // Main Wrapper 
+
+        var radio = 'radio';
+        var radioname = 'visibilityOptions';
+        var values = ['All','Selected','Missing'];
+        
+        var show = (
+          <span>
+            <p />
+            {values.map( function (value, index) {
+              return (
+                <span key={index}>
+                  <input type={radio} name={radioname} value={value} />
+                  &nbsp; {value} &nbsp;
+                </span>
+              )
+
+            })}
+          </span>
+        )
+
       console.log("**** GLOB " + JSON.stringify(globals));
       console.log("SEND LIST: " + JSON.stringify(this.props.list));
       return (
         <div>
           <div className='IListWrapper'>
             <listTitle>{this.props.title}</listTitle>
-            <IList id={sublistID} item={settings['0']} list={this.props.list} global={globals} settings={settings} test={test} updateList={this.updateList}/>
-          </div>
-          <div>
+            {show}
             <h5>Chose: {selected.labels.join(', ')}</h5>
-            <hr />        
-            <h5>{JSON.stringify(test)}</h5>  
-            <input onClick={this.testIt} />
+            
+            <IList id={sublistID} item={settings['0']} list={this.props.list} global={globals} settings={settings} test={test} updateList={this.updateList.bind(this)}/>
+            
+            { globals.changed.length ? <div><hr /><button onClick={this.SaveList}>Save Changes</button></div> : '' }
           </div>
         </div>
       )
