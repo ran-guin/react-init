@@ -8,9 +8,20 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/',function(req,res) {
-  res.json({message : "Hello World"});
+
+  var routes = {
+  	'api' : {
+  		'public' : ['lookup', 'validate', 'login', 'signup'],
+  		'private' : ['profile']
+  	},
+  }
+
+  res.json({ routes : routes});
 });
 
-router.use('/user',require('./client/src/Standard/User/UserRoutes'));
+router.get('/api/search', function (req, res) {
+	res.json({action : 'search for it'});
+});
+// router.use('/user',require('./client/src/Standard/User/UserRoutes'));
 
 module.exports = router;
