@@ -14,6 +14,10 @@ var Dbc = require('./../models/dbc');
   * Second route will handle the API calls.
 */
 
+router.use('/',require('./../routes'));
+router.use('/lookup',require('./lookup'));
+router.use('/user',require('./user'));
+
 router.get('/', function(req,res) {
   res.json({message : "Hello Controller World"});
 });
@@ -82,6 +86,5 @@ router.get('/build/:table', function (req,res) {
 
 })
 
-router.use('/user',require('./user'));
 
 module.exports = router;
