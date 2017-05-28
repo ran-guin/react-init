@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import './Main.css';
+import dh from './../Logo/doublehelix.gif';
 
 // import Sequelize from 'sequelize';
 import Logo from './../Logo/Logo';
@@ -45,11 +46,24 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <Logo />
+          <h1>{this.props.username}</h1>
           <h2>{this.props.title}</h2>
         </div>
-        {this.props.children}
-        <h5>U: {this.props.username}</h5>
-        <input type='text' placeholder='Username' />
+        <table width='100%' height='100%'>
+          <tbody>
+          <tr>
+            <td width='100px'>
+              <img src={dh} />
+            </td>
+            <td>
+              {this.props.children}
+            </td>
+            <td width='100px'>
+              <img src={dh} />
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     );
   }
