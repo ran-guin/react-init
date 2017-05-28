@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import './List.css';
 
-class App extends Component {
+// import {observable} from 'mobx';
+import {observer} from 'mobx-react';
+
+const List = observer(
+class List extends Component {
   
   render() {
 
@@ -19,10 +23,11 @@ class App extends Component {
     );
   }
 }
+);
 
-App.propTypes = {
+List.propTypes = {
   name: React.PropTypes.string.isRequired,
   list: React.PropTypes.array.isRequired,
 }
 
-export default App;
+export default List;
