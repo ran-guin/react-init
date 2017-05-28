@@ -269,7 +269,7 @@ class User extends Component {
       box = <List className='ListBox' name='Skills' list={UserList.skills} />
     }
     else if (this.state.view === 'iterative') {
-      box = <IListWrapper title='Iterative List Wrapper' list={UserList.iterative} dropdown={selectable} />
+      box = <IListWrapper title='Interests' list={UserList.iterative} dropdown={selectable} />
     }
     else if (this.state.view === 'search') {
       box = <div>
