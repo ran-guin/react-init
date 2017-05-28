@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import axios from 'axios';
 import cors from 'cors';
 
-import mobx from 'mobx';
+// import mobx from 'mobx';
+import {observable} from 'mobx';
+import {observer} from 'mobx-react';
 
-import {observable} from 'mobx-react';
+// import {observable} from 'mobx-react';
 
+import Menu from './../List/Menu';
 import List from './../List/List';
 import IListWrapper from './../IList/IListWrapper';
+import Form from './../Form/Form';
 
 import SearchGrid from './../SearchGrid/SearchGrid';
 
@@ -21,22 +25,6 @@ const corsOptions = {
   maxAge: 3600
 };
 
-const interests = ['Sport', 'Hiking', 'Photography'];
-const skills = ['Climbing', 'Aerobics', 'Dance'];
-const name = 'Johann';
-
-// Example of iterative expandable-hierarchy-based list 
-// const Iterative_List = [
-//                          { name : 'A', id: 1, list: []}, 
-//                          { name : 'B', id: 2}, 
-//                          { 
-//                            name : 'C', 
-//                            id: 3, 
-//                            list: [
-//                                { name: 'C.1', id: 4}
-//                            ]
-//                          }
-//                        ];
 
 const Iterative_List = [
   { name : 'Cultural',
@@ -95,32 +83,92 @@ const Iterative_List = [
   }
 ];
 
-const grid = [{name: 'id'}, {name: 'email'}];
+const UserList = {
+  interests : ['Sport', 'Hiking', 'Photography'],
+  skills : ['Climbing', 'Aerobics', 'Dance'],
+  iterative : Iterative_List
+}
 
-class App extends Component {
+// test automated form generation for various element types ...
+const survey = [
+  { 
+    name: 'age',
+    prompt: 'How old are you',
+    type: 'number'
+  },
+ { 
+    name: 'born',
+    prompt: 'Where were you born',
+    type: 'string'
+  },
+  {
+    name: 'gender',
+    prompt: 'Gender ?',
+    type: 'radio',
+    options: ['M','F','Other']
+  },
+  {
+    name: 'gender',
+    prompt: 'Purpose ?',
+    type: 'checkbox',
+    options: ['Social','Business','Other']
+  },
+  {
+    name: 'gender',
+    prompt: 'Country of Birth',
+    type: 'dropdown',
+    options: ['Canada','US', 'Europe','Asia', 'Australia','Africa','Other']
+  }
+];
+
+const pages = ['interests', 'skills', 'iterative', 'search', 'survey'];
+
+
+var search = {
+  // table: 'grp',
+  // fields: ['name','access']
+  table : 'user',
+  fields: ['name','email'],
+  show: ['name','email','access']
+  // fields: [{name: 'id'}, {name: 'email'}],
+};
+
+const User = observer(
+class User extends Component {
   
   // @observable Fname = 'John';
   // @observable Lname = 'Doe';
 
   static PropTypes = {
     name: React.PropTypes.string,
-    details: React.PropTypes.text
+    details: React.PropTypes.text,
+    view: React.PropTypes.string,
+    pickedId: React.PropTypes.number,
+    pickedName: React.PropTypes.number,
   }
 
   static defaultProps = {
-    details: 'initial details'
+    details: 'initial details',
+    view: 'main'
   }
 
   constructor(props) {
     super(props);
 
-    this.name = 'Name';
-    this.state = {
-      details: 'init',
-      name: 'Jeff'
-    };
+    this.name = this.props.name;
+    this.id   = this.props.id;
 
-    console.log("continue...");
+    this.details = observable( { name: this.props.name, id: this.props.id});
+
+    this.view = 'main';
+    this.state = {
+      details: 'initial details',
+      name: 'Jeff',
+      view: 'other',
+      page: 'main',
+      message: '',
+      record: {},
+    };
   }
 
 
@@ -133,14 +181,7 @@ class App extends Component {
       var url = 'http://localhost:3002/user/' + userid;
       axios.get(url, cors(corsOptions))
       .then ( function (result) {
-        console.log('got user results');
-
-        // console.log("Name set to" + this.props.name);
-        // this.setState( {name: 'Gina'} );
-
-        console.log(JSON.stringify(result.data[0]));
-        // this.details = JSON.stringify(result[0]);
-        // this.setState({ details: JSON.stringify(result) });
+        // 
       })
       .catch ( function (err) {
         console.log('axios call error');
@@ -161,54 +202,98 @@ class App extends Component {
       var _this = this;
       axios.get(url, cors(corsOptions))
       .then ( function (result) {
-        console.log('got user results 2');
-        // this.details = "revised details";
-        // console.log("Name set to" + this.props.name);
-        // this.setState( {name: 'Gina'} );
-
         console.log(JSON.stringify(result.data[0]));
-        // this.details = JSON.stringify(result[0]);
-        _this.setState({ details: 'updated result', name: 'George'});
+        _this.setState({ record : result.data[0]} );
       })
       .catch ( function (err) {
         // this.details='error details';
-        _this.setState({ details: 'axios error: ' + err });
+        _this.setState({ message: 'axios error: ' + err });
         console.log(err);
       });
     }
 
   }
 
-  load() {
-    console.log('load');
+  loadPage(page) {
+
+    // var _this = this;
+
+    if (page.target && page.target.name) { 
+      var view = page.target.name;
+      this.setState({
+        view: view,
+      });
+
+      console.log("loaded " + view + ' page'); 
+    }
+    else {
+      console.log("no page name");
+    }
+  }
+
+  onPick(evt) {
+    // id, name, record) {
+    
+    var picked = {};
+
+    if (evt && evt.target) {
+      picked = evt.target;
+      console.log("Picked: " + picked.id + ' : ' + picked.name);
+    }
+    picked.status = 'picked';
+
+    this.setState({
+      pickedId: picked.id,
+      pickedName: picked.name,
+      // pickedRecord: picked.record,
+      pickedStatus: 'picked',
+    });
+
+    return false;
   }
 
   render() {
     
     var userid = this.props.params.userid;
     var username = this.props.name;
-    var depth = this.props.depth + 1;
+
     var selectable = true;
-    var off = false;
+    // var pages = this.pages;
+    var title = "<B>Hi there</B>";
+
+    let box = null;
+    if (this.state.view === 'interests') {
+      box = <List className='ListBox' name='Interests' list={UserList.interests} />
+    } 
+    else if (this.state.view === 'skills') {
+      box = <List className='ListBox' name='Skills' list={UserList.skills} />
+    }
+    else if (this.state.view === 'iterative') {
+      box = <IListWrapper title='Iterative List Wrapper' list={UserList.iterative} dropdown={selectable} />
+    }
+    else if (this.state.view === 'search') {
+      box = <div>
+             <b>Picked: {this.state.pickedName} [{this.state.pickedId}] </b>
+             <hr />
+             <SearchGrid table={search.table} fields={search.fields} show={search.show}  onPick={this.onPick.bind(this)}/>
+            </div>;
+    }
+    else if (this.state.view === 'survey') {
+      box = <div>
+              <Form elements={survey} name='Survey' />
+            </div>;
+    }
+    else { box = <div> Undefined Page</div> }
 
     return (
-      <div className='UserProfile'>
-        <h3>{this.name} or {this.state.name} : {userid} [{username}]</h3>
-        <List className='ListBox' name='Interests' list={interests} />
-        <p />
-        <List className='ListBox' name='Skills' list={skills} />
-        <p />
-        <IListWrapper title='Iterative List Wrapper' list={Iterative_List} selectable={selectable} />
-        <p />
-        <p>
-          <b>Results:</b>
-          <span>{this.state.details}</span>
-        </p>
-        <hr />
-        <SearchGrid fields={grid} />
-      </div>
+        <div className='UserProfile'>
+          <h3>{this.state.name}</h3>
+          <Menu options={pages} onPick={this.loadPage.bind(this)} />          
+          <span> &nbsp; </span>
+          {box}
+        </div>
     );
   }
-}
+});
 
-export default App;
+export default User;
