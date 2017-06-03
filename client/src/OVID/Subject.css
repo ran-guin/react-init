@@ -1,0 +1,10 @@
+.SubjectPage {
+	border: 1px solid black;
+	padding: 0px;
+	margin: 10px;
+}
+
+.SubjectHeader {
+	background-color: #999;
+	padding:10px;
+}
