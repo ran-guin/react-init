@@ -4,7 +4,7 @@ var config = {
 			host: 'localhost',
 			user: 'testuser',
 			password: 'testpass',
-			database: 'litmusdev'
+			database: 'react_test'
 		}
 	}
 }
