@@ -32,7 +32,9 @@ class App extends Component {
     	fields: React.PropTypes.array,
     	show: React.PropTypes.array,
     	test: React.PropTypes.array,
-    	onPick: React.PropTypes.function,
+
+    	onPick: React.PropTypes.function,   // not sure how to add optional custom function execution as well... 
+    	selectOne: React.PropTypes.object,
     }
 
 	constructor(props) {
@@ -98,12 +100,45 @@ class App extends Component {
 		});
 	}
 
+	onSelect(evt) {
+		// id, name, record) {
+
+		var picked = {};
+
+		if (evt && evt.target) {
+		  picked = evt.target;
+		  console.log("Picked: " + picked.id + ' : ' + picked.name);
+		}
+		// picked.status = 'picked';
+
+		// this.setState({
+		//   pickedId: picked.id,
+		//   pickedName: picked.name,
+		//   // pickedRecord: picked.record,
+		//   pickedStatus: 'picked',
+		// });
+
+		this.props.selectOne.id = picked.id;
+		this.props.selectOne.name = picked.name;
+		this.props.selectOne.label          = {};
+		this.props.selectOne.status        = 'picked';
+		this.props.selectOne.subject = { id: picked.id, name: picked.name }
+
+		console.log("Call ? " + this.props.onPick);
+		// this.props.onPick.bind(this);
+
+		return false;
+	}
+
+
 	render() {
 
 		var _this = this;
 		var fields = this.props.fields;
 		var show  = this.props.show || fields;
-		var onPick = this.props.onPick.bind(this);
+		var selectOne = this.props.selectOne;
+
+		var onPick;
 
 		var highlight = this.state.highlight;
 		var results = this.state.searchResults;
@@ -112,13 +147,14 @@ class App extends Component {
 		var form;
 
 	    console.log("rendering search results: " + JSON.stringify(results));
+	    console.log("select ONE: " + JSON.stringify(this.props.selectOne));
 
-	    var found = <SearchResults searchResults={results} fields={show} highlight={highlight} onPick={this.props.onPick} />
+	    var found = <SearchResults searchResults={results} fields={show} highlight={highlight} onPick={this.onSelect.bind(this)} />
 	    
         return (  
 			<div className='container SearchGrid'>
-				<h3>Search</h3>
-				<input onBlur={this.searchForIt.bind(this)} />
+			    <b>Selected: {selectOne.name} [{selectOne.id}] = {selectOne.subject.name} </b>
+				<input onBlur={this.searchForIt.bind(this)} placeholder='-- Search --'/>	
 					{found}
 				<hr />
 			</div>

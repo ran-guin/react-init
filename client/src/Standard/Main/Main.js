@@ -53,7 +53,7 @@ class App extends Component {
           <tbody>
           <tr>
             <td width='100px'>
-              <img src={dh} />
+              <img src={dh} alt='no img'/>
             </td>
             <td>
               {this.props.children}

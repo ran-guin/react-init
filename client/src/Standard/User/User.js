@@ -18,6 +18,10 @@ import SearchGrid from './../SearchGrid/SearchGrid';
 
 import './User.css';
 
+var menu = observable({ options: ['interests', 'skills', 'iterative', 'search', 'survey'], selected: 'main'});
+
+var selectOne = observable( { subject: { id: 0, name: 'TBD', label: {} }, status: 'search'});
+
 const corsOptions = {
   origin: true,
   methods: ['GET','POST'],
@@ -121,9 +125,6 @@ const survey = [
   }
 ];
 
-const pages = ['interests', 'skills', 'iterative', 'search', 'survey'];
-
-
 var search = {
   // table: 'grp',
   // fields: ['name','access']
@@ -143,13 +144,10 @@ class User extends Component {
     name: React.PropTypes.string,
     details: React.PropTypes.text,
     view: React.PropTypes.string,
-    pickedId: React.PropTypes.number,
-    pickedName: React.PropTypes.number,
   }
 
   static defaultProps = {
     details: 'initial details',
-    view: 'main'
   }
 
   constructor(props) {
@@ -173,29 +171,11 @@ class User extends Component {
 
 
   componentWillMount(props) {
-    // alert('did mount');
-    var userid = this.props.params.userid;
 
-    if (userid) {
-
-      var url = 'http://localhost:3002/user/' + userid;
-      axios.get(url, cors(corsOptions))
-      .then ( function (result) {
-        // 
-      })
-      .catch ( function (err) {
-        console.log('axios call error');
-      });
-    }
   }
 
-  componentDidMount(props) {
-
-    var userid = this.props.params.userid;
-
-    // this.details = 'initial results ' + userid;
-
-    if (userid) {
+  loadUser(userid) {
+   if (userid) {
       var url = 'http://localhost:3002/user/' + userid;
       // this.details = 'first revision';
 
@@ -210,45 +190,16 @@ class User extends Component {
         _this.setState({ message: 'axios error: ' + err });
         console.log(err);
       });
-    }
-
+    }    
   }
 
-  loadPage(page) {
-
-    // var _this = this;
-
-    if (page.target && page.target.name) { 
-      var view = page.target.name;
-      this.setState({
-        view: view,
-      });
-
-      console.log("loaded " + view + ' page'); 
-    }
-    else {
-      console.log("no page name");
-    }
+  componentDidMount(props) {
+    this.loadUser(this.props.params.userid);
   }
 
   onPick(evt) {
     // id, name, record) {
-    
-    var picked = {};
-
-    if (evt && evt.target) {
-      picked = evt.target;
-      console.log("Picked: " + picked.id + ' : ' + picked.name);
-    }
-    picked.status = 'picked';
-
-    this.setState({
-      pickedId: picked.id,
-      pickedName: picked.name,
-      // pickedRecord: picked.record,
-      pickedStatus: 'picked',
-    });
-
+    console.log('do custom stuff as well....');
     return false;
   }
 
@@ -262,23 +213,25 @@ class User extends Component {
     var title = "<B>Hi there</B>";
 
     let box = null;
-    if (this.state.view === 'interests') {
+    var selected = menu.selected;
+
+    if (selected === 'interests') {
       box = <List className='ListBox' name='Interests' list={UserList.interests} />
     } 
-    else if (this.state.view === 'skills') {
+    else if (selected === 'skills') {
       box = <List className='ListBox' name='Skills' list={UserList.skills} />
     }
-    else if (this.state.view === 'iterative') {
+    else if (selected === 'iterative') {
       box = <IListWrapper title='Interests' list={UserList.iterative} dropdown={selectable} />
     }
-    else if (this.state.view === 'search') {
+    else if (selected === 'search') {
       box = <div>
-             <b>Picked: {this.state.pickedName} [{this.state.pickedId}] </b>
+             <b>Picked: {selectOne.subject.name} [{selectOne.subject.id}] </b>
              <hr />
-             <SearchGrid table={search.table} fields={search.fields} show={search.show}  onPick={this.onPick.bind(this)}/>
+             <SearchGrid table={search.table} fields={search.fields} show={search.show} selectOne={selectOne} onPick={this.onPick.bind(this)}/>
             </div>;
     }
-    else if (this.state.view === 'survey') {
+    else if (selected === 'survey') {
       box = <div>
               <Form elements={survey} name='Survey' />
             </div>;
@@ -288,7 +241,7 @@ class User extends Component {
     return (
         <div className='UserProfile'>
           <h3>{this.state.name}</h3>
-          <Menu options={pages} onPick={this.loadPage.bind(this)} />          
+          <Menu menu={menu} /> 
           <span> &nbsp; </span>
           {box}
         </div>

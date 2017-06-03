@@ -201,7 +201,7 @@ class IList extends Component {
     var depth = this.item.depth || 0;
     depth = depth+1;
 
-    var globalSelect = this.props.global.selectable || 1;
+    var globalSelect = this.props.global.selectable || false;
     var show = this.props.global.show;
 
     var showIcon = <span>&gt; &lt;</span>; // <i className='fa fa-close'></i>;

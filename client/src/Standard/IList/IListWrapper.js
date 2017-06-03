@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+
 import './IListWrapper.css';
+
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
@@ -11,7 +13,6 @@ const defaultHiddenState = true;
 var globals = observable({ status: 'initialized', timestamp: new Date(), list : {}, changed: []});
 var settings   = observable({ });
 
-var selected = observable({ count: 0, ids: [], labels: [] });
 var initial_selection;   
 
 var changes = [];
@@ -31,15 +32,19 @@ class App extends Component {
     hideAll: React.PropTypes.boolean,
     show: React.PropTypes.string,
     // globals 
-    selectable: React.PropTypes.boolean,
+    selectable: React.PropTypes.string,   // enum[all, endpoints, none]
     collabpsible: React.PropTypes.boolean,
     multiple: React.PropTypes.boolean,
     minDepth: React.PropTypes.number,
+
+    onSave: React.PropTypes.function,
+    selected:React.PropTypes.object,
   }
 
-  // static defaultProps = {
-  //   details: 'initial details'
-  // }
+  static defaultProps = {
+    details: 'initial details',
+    selected: { count: 0, ids: [], labels: [] }
+  }
  
   constructor(props) {
     super(props);
@@ -51,7 +56,7 @@ class App extends Component {
       show: this.props.show,
     };
 
-    globals.selectable = this.props.selectable || false;
+    globals.selectable = this.props.selectable;
     globals.show = this.props.show;
     globals.collapsible = this.props.collapsible;   
     globals.minDepth = this.props.minDepth || 1;   
@@ -111,9 +116,9 @@ class App extends Component {
       console.log("G: " + JSON.stringify(globals.list));
 
       if (copy.selected) {
-        selected.count++;
-        selected.ids.push(item.id);
-        selected.labels.push(item.name);
+        this.props.selected.count++;
+        this.props.selected.ids.push(item.id);
+        this.props.selected.labels.push(item.name);
         globals.list[parent].subselects[item.name] = true;
       } 
       else {
@@ -176,29 +181,29 @@ class App extends Component {
     var name = item.name;
     var picked = item.selected;
 
-    var exists = selected.ids.indexOf(id);
+    var exists = this.props.selected.ids.indexOf(id);
     if (picked && exists == -1) {
-      selected.ids.push(id);
-      selected.labels.push(name);
-      selected.count++;
+      this.props.selected.ids.push(id);
+      this.props.selected.labels.push(name);
+      this.props.selected.count++;
     }
     else {
       console.log("exists: " + exists);
       if (exists >= 0) {
-        selected.ids.splice(exists,1);
-        selected.labels.splice(exists,1);
-        selected.count--;
+        this.props.selected.ids.splice(exists,1);
+        this.props.selected.labels.splice(exists,1);
+        this.props.selected.count--;
       }
       else {
         console.log("could not remove " + id + ': ' + name);
       }
     }
     console.log("PARENT UPDATED with " + id + ': ' + name + '(' + picked + ')');
-    console.log(JSON.stringify(selected));  
+    console.log(JSON.stringify(this.props.selected));  
   }
 
   saveList() {
-    console.log("Save List: " + selected.labels.join(', '));
+    console.log("Save List: " + this.props.selected.labels.join(', '));
   }
 
   render() {
@@ -239,11 +244,11 @@ class App extends Component {
           <div className='IListWrapper'>
             <listTitle>{this.props.title}</listTitle>
             {show}
-            <h5>Chose: {selected.labels.join(', ')}</h5>
+            <h5>Chose: {this.props.selected.labels.join(', ')}</h5>
             
             <IList id={sublistID} item={settings['0']} list={this.props.list} global={globals} settings={settings} test={test} updateList={this.updateList.bind(this)}/>
             
-            { globals.changed.length ? <div><hr /><button onClick={this.SaveList}>Save Changes</button></div> : '' }
+            { globals.changed.length ? <div><hr /><button onClick={this.props.onSave}>Save Selections</button></div> : '' }
           </div>
         </div>
       )
