@@ -16,7 +16,7 @@ dbc.prototype.connect = function() {
 	  host : 'localhost',
 	  user : 'tester',
 	  password : 'testpass',
-	  database : 'litmusdev'
+	  database : 'react_test'
 	});
 
 	deferred.resolve(mysql);
