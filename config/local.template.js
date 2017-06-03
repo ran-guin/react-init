@@ -9,7 +9,7 @@ connections: {
     host:     'localhost',
     user:     'tester',
     password: 'testpass',
-    database: 'react_test',
+    database: 'limstest',
   },
   
   productionDB: {
@@ -17,14 +17,7 @@ connections: {
     host:     'localhost',
     user:     'tester',
     password: 'testpass',
-    database: 'react_prod',
-  },
-  devDB: {
-    adapter: 'sails-mysql',
-    host:     'localhost',
-    user:     'tester',
-    password: 'testpass',
-    database: 'react_dev',
+    database: 'lims',
   },
 },
 
