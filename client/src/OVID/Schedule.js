@@ -8,12 +8,17 @@ import './Schedule.css';
 import SearchGrid from './../Standard/SearchGrid/SearchGrid';
 import Menu from './../Standard/List/Menu';
 
+import Scheduled from './Scheduled.js';
 
 var subject = observable( { id: 0, name: 'TBD', loaded: false, details: {} });
 const menu = observable( {options: ['user', 'search', 'history', 'scheduled'], selected: 'user'});
 
-var search = {table: 'user', fields: ['name','email']}
-const selectOne = observable( { subject: subject, name: 'TBD', id: 0, label: {}, status: 'search' });
+var search = {table: 'empuser', fields: ['username','grp', 'email'] };
+// var show = {table: 'empuser', fields: ['username','email'] };
+
+const selectOne = observable( { subject: subject, nemailame: 'TBD', id: 0, label: {}, status: 'search' });
+
+const scheduled = observable( { list: [] } );
 
 const App = observer(
 class App extends Component {
@@ -63,6 +68,26 @@ class App extends Component {
     selectOne.status = 'search';
   }
 
+  onDelete(evt) {
+    console.log("Delete Scheduled item...");
+
+    var id=evt.target.id;
+    console.log("clear " + id);
+  }
+
+  onPick(evt) {
+    console.log("Add Scheduled item... ");
+    var name = evt.target.name;
+    var id = evt.target.id;
+
+    var attribute = evt.target.getAttribute('data-attribute');
+    var model = evt.target.getAttribute('data-model');
+
+    console.log("Loaded " + name + attribute + model);
+
+    scheduled.list.push({id: id, name: name, attribute: attribute, model: model});
+  }
+
   render() {
 
     var selected = menu.selected;
@@ -71,38 +96,43 @@ class App extends Component {
     console.log(JSON.stringify(selectOne));
     var section = null;
 
-    if (selected === 'search' && selectOne.status != 'picked') {
-      // section = <SearchGrid table={search.table} fields={search.fields} show={search.show} selectOne={selectOne} />
-    }
-    else if (selected === 'search' && selectOne.status=='picked') {
-      section = (
-        <div className="ScheduleHeader">
-          {selectOne.subject.id ? <b>{selectOne.subject.id} = {selectOne.subject.name}</b> : <button onClick={this.searchVaccines.bind(this)}>load User</button>}
-          <b>Status = {selectOne.status}</b>
-          <button onClick={this.loadSchedule}>Load User Data</button>
-          <button onClick={this.cancelSearch}>Cancel</button>
-        </div>);               
-    }
-    else if (selectOne.subject.id) {
-      // subject.name = selectOne.name;
-      section = (
-        <div className="ScheduleHeader">
-          {selectOne.subject.id ? <div><b>{selectOne.subject.id} = {selectOne.subject.name}</b> M={menu.selected}</div> : <button onClick={this.searchVaccines.bind(this)}>load User</button>}
-          <Menu menu={menu} />
-        </div>);         
-    }
-    else { 
-      console.log("null user ... nothing displayed")
-      section = (<div className="ScheduleHeader">
-                  <button onClick={this.addToSchedule.bind(this)}>load Info</button> 
-                </div>);
-    }
+    // if (selected === 'search' && selectOne.status != 'picked') {
+    //   // section = <SearchGrid table={search.table} fields={search.fields} show={search.show} selectOne={selectOne} />
+    // }
+    // else if (selected === 'search' && selectOne.status=='picked') {
+    //   section = (
+    //     <div className="ScheduleHeader">
+    //       {selectOne.subject.id ? <b>{selectOne.subject.id} = {selectOne.subject.name}</b> : <button onClick={this.searchVaccines.bind(this)}>load User</button>}
+    //       <b>Status = {selectOne.status}</b>
+    //       <button onClick={this.loadSchedule}>Load User Data</button>
+    //       <button onClick={this.cancelSearch}>Cancel</button>
+    //     </div>);               
+    // }
+    // else if (selectOne.subject.id) {
+    //   // subject.name = selectOne.name;
+    //   section = (
+    //     <div className="ScheduleHeader">
+    //       {selectOne.subject.id ? <div><b>{selectOne.subject.id} = {selectOne.subject.name}</b> M={menu.selected}</div> : <button onClick={this.searchVaccines.bind(this)}>load User</button>}
+    //       <Menu menu={menu} />
+    //     </div>);         
+    // }
+    // else { 
+    //   console.log("null user ... nothing displayed")
+    //   section = (<div className="ScheduleHeader">
+    //               <button onClick={this.addToSchedule.bind(this)}>load Info</button> 
+    //             </div>);
+    // }
 
     return (
       <div className="SchedulePage">
         <div >
+          <Scheduled scheduled={scheduled} />
           {section}
-          <SearchGrid table={search.table} fields={search.fields} show={search.show} selectOne={selectOne} />
+          <SearchGrid table={search.table} conditions={search.conditions} fields={search.fields} 
+            show={search.show} 
+            selectOne={selectOne} 
+            onPick={this.onPick.bind(this)} 
+          />
         </div>
         {this.props.children}
       </div>
