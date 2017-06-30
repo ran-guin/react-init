@@ -19,6 +19,7 @@ var selected = observable({ count: 0, ids: [], labels: [] });
 class App extends Component {
 	static PropTypes = {
 		searchResults: React.PropTypes.array,
+		table: React.PropTypes.string,
     	fields: React.PropTypes.array,
     	show: React.PropTypes.array,
     	highlight: React.PropTypes.string,
@@ -28,6 +29,7 @@ class App extends Component {
 
 		var results = this.props.searchResults || [];
 
+		var model = this.props.table;
 		var headers = this.props.fields;
 		var highlight = this.props.highlight;
 		var onPick   = this.props.onPick.bind(this);
@@ -64,12 +66,23 @@ class App extends Component {
 							return (
 								<tr key={i}>			        				
 			        				{headers.map(function(key, index) {
-			        					var formatted = record[key];  // .replace(highlight, '<b>' + highlight + '</b>');
+			        					
+			        					var fld = key;
+			        					var full_spec = fld.match(/^(.+)\.(.+)/);
+
+			        					var thismodel = model;
+			        					if (full_spec) { 
+			        						thismodel = full_spec[1];
+			        						fld = full_spec[2];
+			        					}
+
+			        					var highlit = '<b>' + highlight + '</b>'
+			        					var formatted = record[fld].replace(highlight, highlit );
 
 				        				return (
 				        					<td key={index}>
-				        						<a href='#' id={pickedId} name={formatted} onClick={onPick}>
-				        							{formatted}
+				        						<a href='#' id={pickedId} data-html='true' data-model={thismodel} data-attribute={fld} name={formatted} onClick={onPick} dangerouslySetInnerHTML={{__html: formatted}}>
+				
 				        						</a>
 				        					</td>
 				        				)
@@ -107,9 +120,7 @@ class App extends Component {
 			}
 		}
 		else {
-			return <div id='searchResults'>
-					<b>..pending search..</b>
-			   </div>
+			return <div id='searchResults'> </div>
 		}
 	}
 }

@@ -27,6 +27,8 @@ class App extends Component {
 
 	static PropTypes = {
 		table: React.PropTypes.string,
+		fields: React.PropTypes.array,
+		condidion: React.PropTypes.array,
 		header: React.PropTypes.string,
 		caseSensitive: React.PropTypes.boolean,
     	fields: React.PropTypes.array,
@@ -73,12 +75,18 @@ class App extends Component {
 		var data = {}; // cors(corsOptions);
 		data.model = this.props.table;
 
-		var conditions = [];
+		var conditions = this.props.conditions || [1];
 		
+		var search_conditions = [];
 		for (var i=0; i<fields.length; i++) {
-			conditions.push(fields[i] + " LIKE '%" + searchString + "%'");
+			search_conditions.push(fields[i] + " LIKE '%" + searchString + "%'");
 		}
-		data.condition = conditions.join(' OR ');
+		var add_condition = '(' + search_conditions.join(' OR ') + ')';
+
+		var all_conditions = conditions.join(' AND ');
+		if (add_condition) { all_conditions += ' AND ' + add_condition }
+
+		data.condition = all_conditions;
 
 		console.log('** Search : ' + JSON.stringify(data));
 
@@ -125,7 +133,9 @@ class App extends Component {
 		this.props.selectOne.subject = { id: picked.id, name: picked.name }
 
 		console.log("Call ? " + this.props.onPick);
-		// this.props.onPick.bind(this);
+		if (this.props.onPick) {
+			this.props.onPick(evt);
+		}
 
 		return false;
 	}
@@ -153,7 +163,7 @@ class App extends Component {
 	    
         return (  
 			<div className='container SearchGrid'>
-			    <b>Selected: {selectOne.name} [{selectOne.id}] = {selectOne.subject.name} </b>
+			    <b>Search:</b>
 				<input onBlur={this.searchForIt.bind(this)} placeholder='-- Search --'/>	
 					{found}
 				<hr />
