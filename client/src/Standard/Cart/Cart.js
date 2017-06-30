@@ -14,33 +14,67 @@ class Cart extends Component {
     name: React.PropTypes.name,
   }
 
+  update_qty = function(e) {
+    console.log(e.target + ' = ' + e.target.value);
+    var id = e.target.id;
+    console.log(id + ' = ' + e.target.value);
+
+    var index = e.target.id;
+
+    this.props.selected[index].qty = e.target.value;
+  }
+
   render() {
 
     var items = this.props.selected || {};
+    var _this = this;
     console.log("S in Cart: " + JSON.stringify(this.props.selected));
-    return (
-      <div className='CartBox'>
-        <b>Items Selected: </b>
-        <table className='CartTable'>
-          {items.ids.map(function(element, index){
-            
-            var id = element;            
-            var name = items.name[index];
-            var cost = items.cost[index];
-            var qty = items.qty[index] || 0;
 
-            var subtotal = parseInt(qty) * parseFloat(cost);
+    if (items && items.length) {
+      return (
+        <div className='CartBox'>
+          <b>Items Selected: </b>
+          <table className='CartTable table'>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>#</th>
+                <th>cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(function(element, index){
+                
+                var id = element.id;            
+                var name = element.name;
+                var cost = element.cost || 0;
+                var qty = items.qty || 1;
 
-            return <tr className='form-row' key={ index }>
-                    <td>{name}</td>
-                    <td>{qty}</td>
-                    <td>{cost}</td>
-                    <td>{subtotal}</td>
-                   </tr>;
-          })}
-        </table>
-      </div>
-    );
+                var qty_id = index ;
+
+                var subtotal = parseInt(qty) * parseFloat(cost);
+
+                return <tr className='form-row' key={ index }>
+                        <td>{name}</td>
+                        <td>
+                          <input id={qty_id} type='number' value={qty} onChange={_this.update_qty.bind(_this)} />
+                        </td>
+                        <td>{cost}</td>
+                        <td>{subtotal}</td>
+                       </tr>;
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div>
+          <b>Nothing in cart</b>
+        </div>
+      );
+    }
   }
 }
 );

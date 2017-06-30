@@ -1,0 +1,22 @@
+
+.CartBox {
+	padding: 10px;
+	margin: 10px;
+}
+
+.CartBox table {
+	border: 1px solid black;
+}
+
+.CartBox thead {
+	background-color: #ccc;
+}
+
+.CartBox td {
+	border: 1px solid grey;
+}
+
+.cart-header {
+	background-color: #000;
+	padding: 10px;
+}
