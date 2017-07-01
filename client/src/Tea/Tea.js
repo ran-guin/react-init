@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 import './Tea.css';
 
@@ -34,15 +35,15 @@ console.log("LOAD ME");
 
 var iTeas = observable({list: []});
 
-var iterate_progeny = function(list,from) {
-    var list = data.result || [];
+var iterate_progeny = function(list, from) {
+    // var list = data.result || [];
     var ids = _.pluck(list, 'id');
 
     var Ilist = [];
     for (var i=0; i<ids.length; i++) {
       var parent = list[i].parent || null;
 
-      if (from == parent) {
+      if (from === parent) {
         // first pass
         var id = list[i].id;
         var name = list[i].name;
@@ -54,7 +55,7 @@ var iterate_progeny = function(list,from) {
         console.log(from + ' = ' + parent + "...  Iterated list for " + id);
         console.log(JSON.stringify(ilist));
 
-        var item = { name: name, id: id, selected: sel, list: ilist};
+        var item = { name: name, id: id, selected: sel, list: ilist, cost: cost, qty: qty};
         
         Ilist.push(item);
 
@@ -77,87 +78,35 @@ var iterate_progeny = function(list,from) {
 
 // build_x();
 
-const Teas = [
-  { name : 'Black',
-    id : 1,
-    selected: false,
-    list : [
-      { 
-        name : 'Earl Grey',
-        id   : 2,
-        selectable: false,
-        list : [
-          { 
-            name: 'Lady Earl Grey',
-            id: 21,
-            selectable: true,
-            list: []
-          },
-          { 
-            name: 'Earl Grey Cream',
-            id: 22,
-            selectable: true,
-            list: []
-          },
-          { 
-            name: 'Classic Earl Grey',
-            id: 23,
-            selectable: true,
-            list: []
-          },
-
-        ]
-      },
-      { 
-        name : 'English Breakfast',
-        id : 3,
-        selectable: true,
-        list : []
-      }
-    ]
-  },
-  {
-    name : 'Green',
-    id : 10,
-    list : [
-      { name : 'Macha', id: 11 }, 
-      { name : 'Classic Green', id: 12},
-    ]
-  }
-];
 
 const App = observer(
 class App extends Component {
     
-  static propTypes = {
-    title: React.PropTypes.string,
-    username: React.PropTypes.string,
-    defaultPage: React.PropTypes.string,
-  }
 
   static defaultProps = {
     title: 'Specified Default Title'
   }
 
- constructor(props) {
-    super(props);
+ // constructor(props) {
+ //    super(props);
+ //    // nothing yet... 
+ //  }
 
-  }
+ //  componentWillMount(props) {
+ //    // alert('did mount');
+ //  }
 
-  componentWillMount(props) {
-    // alert('did mount');
-  }
+ //  componentDidMount(props) { 
+ //    // nothing yet... 
+ // }
 
-  componentDidMount(props) { 
- }
+ //  componentWillUnmount(props) {
 
-  componentWillUnmount(props) {
-
-    // alert('will unmount');
-  }  
-  componentWillUpdate(props) {
-    // alert('will update');
-  }
+ //    // alert('will unmount');
+ //  }  
+ //  componentWillUpdate(props) {
+ //    // alert('will update');
+ //  }
 
   setUsername = e => {
     this.setState( { username: e.target.value} );
@@ -240,5 +189,11 @@ class App extends Component {
     );
   }
 });
+
+ App.propTypes = {
+    title: PropTypes.string,
+    username: PropTypes.string,
+    defaultPage: PropTypes.string,
+  }
 
 export default App;
