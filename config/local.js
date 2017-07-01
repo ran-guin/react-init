@@ -9,7 +9,7 @@ connections: {
     host:     'localhost',
     user:     'tester',
     password: 'testpass',
-    database: 'react_test',
+    database: 'ovid',
   },
   
   productionDB: {
