@@ -1,6 +1,8 @@
 var mysql = require('mysql-promise')();
 var q    = require('q');
 
+var config = require('../config/local.js');
+
 function dbc(params) {
 	console.log('defining dbc');
 	this.status = 'pending';
@@ -11,23 +13,20 @@ dbc.prototype.connect = function() {
 
 	console.log("CREATING connection to " + mysql.constructor);
 
-	// var connection = mysql.createConnection({
-	mysql.configure({
-	  host : 'localhost',
-	  user : 'tester',
-	  password : 'testpass',
-	  database : 'react_test'
-	});
-
-	deferred.resolve(mysql);
+	var testDB = config.connections.testDB;
 	
-    // mysql.connect()
-    // .then (function (connection) {
-	   //  deferred.resolve(connection);
-    // })
-    // .catch ( function (err) {
-    // 	deferred.reject(err);
-    // });
+	if (testDB) {
+		console.log("Test Connection: " + testDB.user + '@' + testDB.host + '.' + testDB.database);
+		// var connection = mysql.createConnection({
+
+		mysql.configure(testDB);
+		console.log("configured..." + mysql);
+		deferred.resolve(mysql);
+	
+	}
+	else {
+		deferred.reject("Could not find test DB");
+	}
 
     return deferred.promise;	
 }
