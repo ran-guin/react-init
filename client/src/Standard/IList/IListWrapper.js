@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import './IListWrapper.css';
+import PropTypes from 'prop-types'; 
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
@@ -13,9 +14,9 @@ const defaultHiddenState = true;
 var globals = observable({ status: 'initialized', timestamp: new Date(), list : {}, changed: []});
 var settings   = observable({ });
 
-var initial_selection;   
+// var initial_selection;   
 
-var changes = [];
+// var changes = [];
 
 var test = observable({
   'string': 'abc',
@@ -25,21 +26,6 @@ var test = observable({
 
 const App = observer(
 class App extends Component {
- 
-  static PropTypes = {
-    title: React.PropTypes.string,
-    list: React.PropTypes.array,
-    hideAll: React.PropTypes.boolean,
-    show: React.PropTypes.string,
-    // globals 
-    selectable: React.PropTypes.string,   // enum[all, endpoints, none]
-    collabpsible: React.PropTypes.boolean,
-    multiple: React.PropTypes.boolean,
-    minDepth: React.PropTypes.number,
-
-    onSave: React.PropTypes.function,
-    selected:React.PropTypes.object,
-  }
 
   static defaultProps = {
     details: 'initial details',
@@ -182,7 +168,7 @@ class App extends Component {
     var picked = item.selected;
 
     var exists = this.props.selected.ids.indexOf(id);
-    if (picked && exists == -1) {
+    if (picked && exists === -1) {
       this.props.selected.ids.push(id);
       this.props.selected.labels.push(name);
       this.props.selected.count++;
@@ -211,8 +197,8 @@ class App extends Component {
     var list = this.props.list;
 
     if (list.length) {
-      var count = list.length;
-      var hidden = this.props.hide || true;
+      // var count = list.length;
+      // var hidden = this.props.hide || true;
       
       var sublistID = '0sublist';
 
@@ -265,4 +251,19 @@ class App extends Component {
   }
 })
 
+App.PropTypes = {
+    title: PropTypes.string,
+    list: PropTypes.array,
+    hideAll: PropTypes.bool,
+    show: PropTypes.string,
+    // globals 
+    selectable: PropTypes.string,   // enum[all, endpoints, none]
+    collabpsible: PropTypes.bool,
+    multiple: PropTypes.bool,
+    minDepth: PropTypes.number,
+
+    onSave: PropTypes.func,
+    selected:PropTypes.object,
+  }
+  
 export default App;

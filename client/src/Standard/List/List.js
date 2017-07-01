@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './List.css';
+import PropTypes from 'prop-types'; 
 
 // import {observable} from 'mobx';
 import {observer} from 'mobx-react';
@@ -26,8 +27,8 @@ class List extends Component {
 );
 
 List.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  list: React.PropTypes.array.isRequired,
+  name: PropTypes.string.isRequired,
+  list: PropTypes.array.isRequired,
 }
 
 export default List;

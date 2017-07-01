@@ -1,10 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types'; 
 
 class SearchBox extends Component {
-
-  static PropTypes = {
-    search: React.PropTypes.object,
-  }
 
   reSearch = function () {
     console.log('Re search ...');
@@ -24,5 +21,9 @@ class SearchBox extends Component {
     );
   }
 }
+
+  SearchBox.propTypes = {
+    search: PropTypes.object,
+  }
 
 export default SearchBox;

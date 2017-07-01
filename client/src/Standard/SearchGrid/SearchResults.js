@@ -1,30 +1,24 @@
 import React, { Component } from 'react';
 
-import {observable} from 'mobx';
-import {observer} from 'mobx-react';
+// import {observable} from 'mobx';
+// import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 import './SearchResults.css';
 
-const corsOptions = {
-  origin: true,
-  methods: ['GET','POST'],
-  credentials: true,
-  maxAge: 3600
-};
+// const corsOptions = {
+//   origin: true,
+//   methods: ['GET','POST'],
+//   credentials: true,
+//   maxAge: 3600
+// };
 
-var searchSettings   = observable({ string: '', caseSensitive: true });
+// var searchSettings   = observable({ string: '', caseSensitive: true });
 
-var selected = observable({ count: 0, ids: [], labels: [] });
+// var selected = observable({ count: 0, ids: [], labels: [] });
 
 class App extends Component {
-	static PropTypes = {
-		searchResults: React.PropTypes.array,
-		table: React.PropTypes.string,
-    	fields: React.PropTypes.array,
-    	show: React.PropTypes.array,
-    	highlight: React.PropTypes.string,
-    	onPick: React.PropTypes.function,
-    }
+
 	render() {
 
 		var results = this.props.searchResults || [];
@@ -61,7 +55,6 @@ class App extends Component {
 						{results.map(function(record, i) {
 			        		
 			        		var pickedId = record.id;
-			        		var pickedRecord = record;
 
 							return (
 								<tr key={i}>			        				
@@ -81,7 +74,7 @@ class App extends Component {
 
 				        				return (
 				        					<td key={index}>
-				        						<a href='#' id={pickedId} data-html='true' data-model={thismodel} data-attribute={fld} name={formatted} onClick={onPick} dangerouslySetInnerHTML={{__html: formatted}}>
+				        						<a href='#' id={pickedId} data-html='true' data-model={thismodel} data-attribute={fld} data-formatted={formatted} data-chose={record[fld]} name={record.name} onClick={onPick} dangerouslySetInnerHTML={{__html: formatted}}>
 				
 				        						</a>
 				        					</td>
@@ -108,7 +101,7 @@ class App extends Component {
 					<div id='searchResults'>
 						<hr />
 						{found}
-						<b>Highlight {this.props.highlight}</b>
+						<b>Searched for '{this.props.highlight}'</b>
 					</div>
 				)
 			}
@@ -124,7 +117,15 @@ class App extends Component {
 		}
 	}
 }
-
+	
+App.propTypes = {
+		searchResults: PropTypes.array,
+		table: PropTypes.string,
+    	fields: PropTypes.array,
+    	show: PropTypes.array,
+    	highlight: PropTypes.string,
+    	onPick: PropTypes.func,
+    }
 // App.propTypes = {
 //   // onPick: React.PropTypes.function,
 //   searchResults: React.PropTypes.array,

@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
 import './Cart.css';
+import PropTypes from 'prop-types'; 
 
-import FormElement from './../Form/FormElement';
+// import FormElement from './../Form/FormElement';
 
-import {observable} from 'mobx';
+// import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
 const Cart = observer(
 class Cart extends Component {
   
-  static PropTypes = {
-    selected: React.PropTypes.object,
-    name: React.PropTypes.name,
-  }
-
   update_qty = function(e) {
     console.log(e.target + ' = ' + e.target.value);
     var id = e.target.id;
@@ -52,12 +48,12 @@ class Cart extends Component {
 
                 var qty_id = index ;
 
-                var subtotal = parseInt(qty) * parseFloat(cost);
+                var subtotal = parseInt(qty, 10) * parseFloat(cost);
 
                 return <tr className='form-row' key={ index }>
                         <td>{name}</td>
                         <td>
-                          <input id={qty_id} type='number' value={qty} onChange={_this.update_qty.bind(_this)} />
+                          <input id={id} data-index={qty_id} type='number' value={qty} onChange={_this.update_qty.bind(_this)} />
                         </td>
                         <td>{cost}</td>
                         <td>{subtotal}</td>
@@ -78,5 +74,10 @@ class Cart extends Component {
   }
 }
 );
+
+  Cart.propTypes = {
+    selected: PropTypes.object,
+    name: PropTypes.name,
+  }
 
 export default Cart;

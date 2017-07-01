@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import './Form.css';
 
 import FormElement from './../Form/FormElement';
+import PropTypes from 'prop-types'; 
 
-import {observable} from 'mobx';
+// import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
 const Form = observer(
@@ -11,7 +12,7 @@ class Form extends Component {
   
   render() {
 
-    var Form = this.props.Form;
+    // var Form = this.props.Form;
     var elements = this.props.elements || [];
 
     return (
@@ -30,7 +31,7 @@ class Form extends Component {
             return <tr className='form-row' key={ index }>
                     <td>{prompt}</td>
                     <td>
-                      <FormElement name={name} options={options} />
+                      <FormElement id={id} type={type} default={def} name={name} options={options} />
                     </td>
                    </tr>;
           })}
@@ -42,9 +43,9 @@ class Form extends Component {
 );
 
 Form.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  method: React.PropTypes.string,
-  elements: React.PropTypes.array.isRequired
+  name: PropTypes.string.isRequired,
+  method: PropTypes.string,
+  elements: PropTypes.array.isRequired
 }
 
 export default Form;

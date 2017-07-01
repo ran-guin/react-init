@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Login.css';
+import PropTypes from 'prop-types'; 
 
 class App extends Component {
   render() {
@@ -12,7 +13,7 @@ class App extends Component {
 }
 
 App.propTypes = {
-  name: React.PropTypes.string
+  name: PropTypes.string
 }
 
 export default App;

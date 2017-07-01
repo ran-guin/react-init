@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 
-import {observable} from 'mobx';
+// import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 const FormElement = observer(
 class FormElement extends Component {
   
   render() {
 
-    var FormElement = this.props.FormElement;
-    var elements = this.props.elements || [];
+    // var FormElement = this.props.FormElement;
+    // var elements = this.props.elements || [];
     
     var name = this.props.name;
     var prompt = this.props.prompt || name;
@@ -19,7 +20,7 @@ class FormElement extends Component {
     
     return (
         <div>
-          <b>{name} [{type}]</b>: {options.join(', ')}
+          <b>{prompt} [{type}]</b>: {options.join(', ')}; id:{id}
         </div>
     );
   }
@@ -27,9 +28,9 @@ class FormElement extends Component {
 );
 
 FormElement.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  prompt: React.PropTypes.string,
-  elements: React.PropTypes.array.isRequired
+  name: PropTypes.string.isRequired,
+  prompt: PropTypes.string,
+  elements: PropTypes.array.isRequired
 }
 
 export default FormElement;

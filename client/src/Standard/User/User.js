@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 // import ReactDOM from 'react-dom';
 import axios from 'axios';
 import cors from 'cors';
+import PropTypes from 'prop-types'; 
 
 // import mobx from 'mobx';
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+
 
 // import {observable} from 'mobx-react';
 
@@ -140,12 +142,6 @@ class User extends Component {
   // @observable Fname = 'John';
   // @observable Lname = 'Doe';
 
-  static PropTypes = {
-    name: React.PropTypes.string,
-    details: React.PropTypes.text,
-    view: React.PropTypes.string,
-  }
-
   static defaultProps = {
     details: 'initial details',
   }
@@ -168,7 +164,6 @@ class User extends Component {
       record: {},
     };
   }
-
 
   componentWillMount(props) {
 
@@ -205,12 +200,12 @@ class User extends Component {
 
   render() {
     
-    var userid = this.props.params.userid;
-    var username = this.props.name;
+    // var userid = this.props.params.userid;
+    // var username = this.props.name;
+    // var title = "<B>Hi there</B>";
 
     var selectable = true;
     // var pages = this.pages;
-    var title = "<B>Hi there</B>";
 
     let box = null;
     var selected = menu.selected;
@@ -248,5 +243,11 @@ class User extends Component {
     );
   }
 });
+
+  User.PropTypes = {
+    name: PropTypes.string,
+    details: PropTypes.text,
+    view: PropTypes.string,
+  }
 
 export default User;

@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 
 import './Main.css';
 import dh from './../Logo/doublehelix.gif';
+import PropTypes from 'prop-types'; 
 
 // import Sequelize from 'sequelize';
 import Logo from './../Logo/Logo';
 
 class App extends Component {
     
-  static propTypes = {
-    title: React.PropTypes.string,
-    username: React.PropTypes.string
-  }
+  // static propTypes = {
+  //   title: React.PropTypes.string,
+  //   username: React.PropTypes.string
+  // }
+  
   static defaultProps = {
     title: 'Specified Default Title'
   }
@@ -59,7 +61,7 @@ class App extends Component {
               {this.props.children}
             </td>
             <td width='100px'>
-              <img src={dh} />
+              <img src={dh} alt='no img'/>
             </td>
           </tr>
           </tbody>
@@ -68,5 +70,10 @@ class App extends Component {
     );
   }
 }
+
+  App.propTypes = {
+    title: PropTypes.string,
+    username: PropTypes.string
+  }
 
 export default App;

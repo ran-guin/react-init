@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import './Menu.css';
+import PropTypes from 'prop-types'; 
 
 // import {observable} from 'mobx';
-import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
 const Menu = observer(
 class Menu extends Component {
 
-  static PropTypes = {
-    onPick: React.PropTypes.function,
-    menu: React.PropTypes.object,
-  } 
+  // static PropTypes = {
+  //   onPick: React.PropTypes.function,
+  //   menu: React.PropTypes.object,
+  // } 
 
   static defaultProps = {
     menu : {
@@ -20,9 +20,11 @@ class Menu extends Component {
     }
   }
 
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+
+  //   // nothing yet... 
+  // }
 
   loadPage(page) {
     // var _this = this;
@@ -39,7 +41,7 @@ class Menu extends Component {
 
   render() {
 
-    var onPick = this.props.onPick;
+    // var onPick = this.props.onPick;
     
     var options = this.props.menu.options;
     var selected = this.props.menu.selected;
@@ -54,7 +56,7 @@ class Menu extends Component {
             console.log("key = " + key);
             return  (<span key={key}>
                       <a href='#' onClick={_this.loadPage.bind(_this)} name={name}> 
-                        {selected == name ? <b>{name}</b> : name}
+                        {selected === name ? <b>{name}</b> : name}
                       </a> &nbsp; &nbsp; 
                     </span>);
           })}
@@ -62,7 +64,11 @@ class Menu extends Component {
       </div>
     );
   }
-}
-);
+});
+
+  Menu.propTypes = {
+    onPick: PropTypes.func,
+    menu: PropTypes.object,
+  } 
 
 export default Menu;

@@ -1,34 +1,15 @@
 import React, { Component } from 'react';
 import './IList.css';
+import PropTypes from 'prop-types'; 
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 
-const defaultHiddenState = true;
+// const defaultHiddenState = true;
 
 const IList = observer(
 class IList extends Component {
  
-  static PropTypes = {
-    title: React.PropTypes.string,
-
-    settings: React.PropTypes.object,   
-    list: React.PropTypes.array,
-
-    item: React.PropTypes.object,
-
-    updateList: React.PropTypes.func,
-
-    index: React.PropTypes.number,
-    depth: React.PropTypes.number,
-    hide: React.PropTypes.boolean,
-    selectable: React.PropTypes.boolean,
-    selected: React.PropTypes.boolean,
-
-    global: React.PropTypes.object,
-    test: React.PropTypes.object
-  } 
-
   // static defaultProps = {
   //   details: 'initial details'
   // }
@@ -55,7 +36,7 @@ class IList extends Component {
   }
 
   componentDidMount(props) {
-    var list = this.props.list;
+    // var list = this.props.list;
 
     if (this.item) {
       this.setState({
@@ -80,10 +61,10 @@ class IList extends Component {
 
     console.log('clear ' + ids.join(','));
     for (var i=0; i<ids.length; i++) {
-      if (ids[i] == parent) {
+      if (ids[i] === parent) {
         console.log('leave ' + parent)
       }
-      else if (ids[i] == id) {
+      else if (ids[i] === id) {
         console.log('self left');
       }
       else {
@@ -181,7 +162,7 @@ class IList extends Component {
 
     // var el = document.getElementById(id + 'sublist');
     // console.log("change visibility from " + el.style.display);
-    // if (el && el.style.display == 'none') {
+    // if (el && el.style.display === 'none') {
     //   el.style.display = 'block';
     // }
     // else if (el) {
@@ -199,10 +180,10 @@ class IList extends Component {
     var list = this.props.list;
 
     var depth = this.item.depth || 0;
-    depth = depth+1;
+    depth++;
 
     var globalSelect = this.props.global.selectable || false;
-    var show = this.props.global.show;
+    var showing = this.props.global.show;
 
     var showIcon = <span>&gt; &lt;</span>; // <i className='fa fa-close'></i>;
     var hideIcon = <span>&lt; &gt;</span>;
@@ -211,14 +192,14 @@ class IList extends Component {
 
     var global = this.props.global;
     var settings = this.props.settings;
-    var test = this.props.test;
+    // var test = this.props.test;
 
     var updateList = this.props.updateList;
 
     var id = this.item.id || '0';
     
     var hidden = this.props.settings[id].collapsed; // this.state.collapsed;
-    var selected = this.props.settings[id].selected;
+    // var selected = this.props.settings[id].selected;
 
     var prechecked = false;
     if (this.props.settings[id].selected) { prechecked = true }
@@ -229,7 +210,7 @@ class IList extends Component {
 
     var select = '';
     if (this.item.depth && (this.item.selectable || globalSelect)) {
-      select = <input id={id} name='selector' type='checkbox' value='' checked={prechecked} onChange={this.toggleSelect.bind(this)}></input>
+      select = <input id={id} name='selector' type='checkbox' value='' data-depth={depth} checked={prechecked} onChange={this.toggleSelect.bind(this)}></input>
     }
     else {
       console.log(this.item.name + ' NOT selectable');
@@ -242,17 +223,17 @@ class IList extends Component {
     }
     else {
       if (settings[this.item.id]) {
-        if (settings[this.item.id].selected == true) {
-          classType = classType + ' selected';
+        if (settings[this.item.id].selected === true) {
+          classType += ' selected';
           settings[this.item.id].classType = 'IListBox selected';
         }
-        else if (settings[this.item.id].selected  == false ) {
-          classType = classType + ' deselected';
+        else if (settings[this.item.id].selected  === false ) {
+          classType += ' deselected';
           settings[this.item.id].classType = 'IListBox deselected';
         }
         else {
-          classType = classType + ' missing';
-          if (show === 'Missing') { hidden = false }
+          classType += ' missing';
+          if (showing === 'Missing') { hidden = false }
           settings[this.item.id].classType = 'IListBox missing';
         } 
       }
@@ -265,9 +246,9 @@ class IList extends Component {
 
     if (list && list.length) {
       // generate recursive list here
-      var count = list.length;
+      // var count = list.length;
 
-      var subselects;
+      // var subselects;
       var globals = this.props.global;
       // if (globals.subselects && globals.subselects[this.item.id]) {
       //   subselects = Object.keys.globals.subselects[this.item.id].join(',');
@@ -286,21 +267,21 @@ class IList extends Component {
               var id = name.id;
               var Slist = name.list || [];
 
-              var selectable = globalSelect || name.selectable;
-              var selected = settings[id].selected;
+              // var selectable = globalSelect || name.selectable;
+              // var selected = settings[id].selected;
 
-              if (typeof Slist == 'string') {
+              if (typeof Slist === 'string') {
                 return <span>Add</span>               
               }
               else if (Slist && Slist.length) {
                 return  <li key={ index }>
-                          <IList title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
+                          <IList classType={classType} title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
                         </li>
               }
               else {
                 if (thisTitle) {
                   return <li key={ index }>
-                          <IList title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
+                          <IList classType={classType} title={thisTitle} list={Slist} item={settings[id]} settings={settings} global={global} updateList={updateList} />
                         </li>
                 }
                 else {
@@ -346,5 +327,25 @@ class IList extends Component {
     }
   }
 })
+
+  IList.ropTypes = {
+    title: PropTypes.string,
+
+    settings: PropTypes.object,   
+    list: PropTypes.array,
+
+    item: PropTypes.object,
+
+    updateList: PropTypes.func,
+
+    index: PropTypes.number,
+    depth: PropTypes.number,
+    hide: PropTypes.boolean,
+    selectable: PropTypes.bool,
+    selected: PropTypes.bool,
+
+    global: PropTypes.object,
+    test: PropTypes.object
+  } 
 
 export default IList;
