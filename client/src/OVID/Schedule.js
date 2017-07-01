@@ -2,31 +2,30 @@ import React, { Component } from 'react';
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 import './Schedule.css';
 
 import SearchGrid from './../Standard/SearchGrid/SearchGrid';
-import Menu from './../Standard/List/Menu';
+// import Menu from './../Standard/List/Menu';
 
 import Scheduled from './Scheduled.js';
 
-var subject = observable( { id: 0, name: 'TBD', loaded: false, details: {} });
+var subject = observable( { id: 0, name: '', loaded: false, details: {} });
 const menu = observable( {options: ['user', 'search', 'history', 'scheduled'], selected: 'user'});
 
-var search = {table: 'empuser', fields: ['username','grp', 'email'] };
+
+// search variables ...
+var search = {url: 'http://localhost:3002/lookup/search', table: 'disease', fields: ['name', 'description', 'link'] };
 // var show = {table: 'empuser', fields: ['username','email'] };
 
-const selectOne = observable( { subject: subject, nemailame: 'TBD', id: 0, label: {}, status: 'search' });
+const selectOne = observable( { subject: subject, name: '', id: 0, label: {}, status: 'search' });
 
 const scheduled = observable( { list: [] } );
 
 const App = observer(
 class App extends Component {
     
-  static propTypes = {
-    user_id: React.PropTypes.number,
-  }
-
   static defaultProps = {
   }
 
@@ -90,7 +89,7 @@ class App extends Component {
 
   render() {
 
-    var selected = menu.selected;
+    // var selected = menu.selected;
     
     console.log("Re render user");
     console.log(JSON.stringify(selectOne));
@@ -128,10 +127,15 @@ class App extends Component {
         <div >
           <Scheduled scheduled={scheduled} />
           {section}
-          <SearchGrid table={search.table} conditions={search.conditions} fields={search.fields} 
+          <SearchGrid 
+            url={search.url} 
+            table={search.table} 
+            conditions={search.conditions} 
+            fields={search.fields} 
             show={search.show} 
-            selectOne={selectOne} 
+            selectOne={selectOne}
             onPick={this.onPick.bind(this)} 
+            prompt='-- Search for Vaccine or Disease --'
           />
         </div>
         {this.props.children}
@@ -139,5 +143,9 @@ class App extends Component {
     );
   }
 });
+
+  App.propTypes = {
+    user_id: PropTypes.number,
+  }
 
 export default App;

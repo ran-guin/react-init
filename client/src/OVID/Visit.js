@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 import './Visit.css';
 
@@ -13,22 +14,18 @@ import Schedule from './Schedule';
 // import Logo from './Logo';
 
 const subject = observable({ id: 0, name: '', details: {} });
-var scheduled = observable( { vaccine: '' });
-var focus = observable( { context: '', id: ''});
+// var scheduled = observable( { vaccine: '' });
+// var focus = observable( { context: '', id: ''});
 
 const menu = observable( {options: ['dashboard', 'history', 'scheduled'], selected: 'dashboard'});
 
-var search = {table: 'vaccine', fields: ['name']}
+// var search = {table: 'vaccine', fields: ['name']}
 const selectOne = observable( { subject: subject, name: 'TBD', id: 0, label: {}, status: 'search' });
 
 
 const App = observer(
 class App extends Component {
-    
-  static propTypes = {
-    title: React.PropTypes.string,
-  }
-
+ 
   static defaultProps = {
     title: 'Vaccination / Immunization UI'
   }
@@ -58,7 +55,7 @@ class App extends Component {
   }
 
   render() {
-    var activate_dropdown = true;
+    // var activate_dropdown = true;
     var selected = menu.selected;
 
     let section = null;
@@ -74,7 +71,6 @@ class App extends Component {
     else if (selected === 'scheduled') {
       section = (
         <div>
-          Schedule page...
           <Schedule user_id={selectOne.subject.id} />
         </div>);
     }
@@ -95,5 +91,10 @@ class App extends Component {
     );
   }
 });
+
+   
+  App.propTypes = {
+    title: PropTypes.string,
+  }
 
 export default App;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 const ScheduledTime = observer(
 class ScheduledTime extends Component {
@@ -24,9 +25,9 @@ class ScheduledTime extends Component {
 );
 
 ScheduledTime.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  prompt: React.PropTypes.string,
-  elements: React.PropTypes.array.isRequired
+  name: PropTypes.string.isRequired,
+  prompt: PropTypes.string,
+  elements: PropTypes.array.isRequired
 }
 
 export default ScheduledTime;

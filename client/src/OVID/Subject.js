@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
+import PropTypes from 'prop-types'; 
 
 import './Subject.css';
 
@@ -9,21 +10,15 @@ import SearchGrid from './../Standard/SearchGrid/SearchGrid';
 import Menu from './../Standard/List/Menu';
 
 
-var subject = observable( { id: 0, name: 'TBD', loaded: false, details: {} });
+var subject = observable( { id: 0, name: '', loaded: false, details: {} });
 const menu = observable( {options: ['user', 'search', 'history', 'scheduled'], selected: 'user'});
 
-var search = {table: 'user', fields: ['name','email']}
-const selectOne = observable( { subject: subject, name: 'TBD', id: 0, label: {}, status: 'search' });
+var search = {url: 'http://localhost:3002/lookup/search', table: 'user', fields: ['name','email']}
+const selectOne = observable( { subject: subject, name: '', id: 0, label: {}, status: 'search' });
 
 const App = observer(
 class App extends Component {
     
-  static propTypes = {
-    title: React.PropTypes.string,
-    id: React.PropTypes.number,
-    subject: React.PropTypes.object,
-  }
-
   static defaultProps = {
     title: 'User Section',
     subject: { 
@@ -62,8 +57,21 @@ class App extends Component {
     selectOne.status = 'search';
   }
 
+  new_Subject() {
+    menu.selected = 'search';
+    selectOne.id = '';
+    selectOne.name = '';
+    selectOne.status = 'search';
+    // selectOne = { subject: subject, name: '', id: 0, label: {}, status: 'search' };
+  }
+
   load_Subject() {
     menu.selected = 'user';
+    selectOne.status = 'search';
+  }
+
+  reset_Subject() {
+    
   }
 
   cancelSearch() {
@@ -79,23 +87,24 @@ class App extends Component {
     console.log(JSON.stringify(selectOne));
     var section = null;
 
-    if (selected === 'search' && selectOne.status != 'picked') {
-      section = <SearchGrid table={search.table} fields={search.fields} show={search.show} selectOne={selectOne} />
+    var prompt = "Enter Name or Health Care ID";
+
+    if (selected === 'search' && selectOne.status !== 'picked') {
+      section = <SearchGrid url={search.url} table={search.table} fields={search.fields} show={search.show} prompt={prompt} selectOne={selectOne} />
     }
-    else if (selected === 'search' && selectOne.status=='picked') {
+    else if (selected === 'search' && selectOne.subject && selectOne.subject.id) {
       section = (
-        <div className="SubjectHeader">
-          {selectOne.subject.id ? <b>{selectOne.subject.id} = {selectOne.subject.name}</b> : <button onClick={this.searchUsers.bind(this)}>load User</button>}
-          <b>Status = {selectOne.status}</b>
-          <button onClick={this.loadSubject}>Load User Data</button>
+        <div className='SubjectHeader alert-success'>
+          Current Subject: {selectOne.subject.id ? <div><b>{selectOne.subject.name}</b> [{selectOne.subject.id}] &nbsp; &nbsp; </div> : <button onClick={this.searchUsers.bind(this)}>load User</button>}
+          <button onClick={this.new_Subject}>New User</button>
           <button onClick={this.cancelSearch}>Cancel</button>
         </div>);               
     }
     else if (selectOne.subject.id) {
       // subject.name = selectOne.name;
       section = (
-        <div className="SubjectHeader">
-          {selectOne.subject.id ? <div><b>{selectOne.subject.id} = {selectOne.subject.name}</b> M={menu.selected}</div> : <button onClick={this.searchUsers.bind(this)}>load User</button>}
+        <div className='SubjectHeader alert-success'>
+          { selectOne.subject.id ? <div><b>{selectOne.subject.name}</b> [{selectOne.subject.id}]  </div> : <button onClick={this.searchUsers.bind(this)}> New User</button>}
           <Menu menu={menu} />
         </div>);         
     }
@@ -119,5 +128,11 @@ class App extends Component {
     );
   }
 });
+
+  App.propTypes = {
+    title: PropTypes.string,
+    id: PropTypes.number,
+    subject: PropTypes.object,
+  }
 
 export default App;

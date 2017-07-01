@@ -4,5 +4,9 @@
 
 .ScheduleTable {
 	width: 100%;
-	border: 1px solid red;
+}
+
+.ScheduleTable tr td {
+	padding: 10px;	
+	background-color: lightgrey;
 }
